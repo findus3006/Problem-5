@@ -11,41 +11,43 @@ def leapFrog(r,p,R,dt):
     return r,p
 
 # General parameters
-N = 300;
-dt = 0.001;
-t = np.arange(0,50,dt);
-global r 
-global p
+N = 30;
+dt = 0.01;
 
+t = np.arange(0,50,dt);
 R = np.zeros([3,1]);
+rcenter = np.zeros([3,len(t)])
 r = np.zeros([3,N,len(t)])
 p = np.zeros([3,N,len(t)])
 r[:,:,0] = np.random.uniform(-0.5,0.5,(3, N)) #0: x,y,z 1:Number of particles, 2: at time t
 p[:,:,0] = np.random.uniform(-0.5,0.5,(3, N))
+
 for i in range(len(t)-1):
-    if t[i] == 24:
+    if t[i] == 25:
         R = np.zeros([3,1]);
         R[0,0] = 1;
     r[:,:,i+1],p[:,:,i+1] = leapFrog(r[:,:,i],p[:,:,i],R,dt);
+    rcenter[:,i] = np.transpose(np.sum(r[:,:,i],1)/N);
 
-#plt.plot(r[0,:,0],r[1,:,0],'.')
-#plt.plot(r[0,:,-1],r[1,:,-1],'.')
+# fig = plt.figure();
+# ax = fig.add_subplot(projection='3d')
+# Just pass the z corodiante to scatter as well and adjust the limits accordingly
 
-fig, ax = plt.subplots();
+fig = plt.figure();
+ax = fig.add_subplot()
 
 def update(i):
     ax.clear();
     ax.scatter(r[0,:,i],r[1,:,i]);
-    ax.set_xlim(-1, 2)
-    ax.set_ylim(-1, 1)
-    ax.text(0.7,0.8,f't = {round(t[i],2)}')
-    
+    ax.set_xlim(-2, 4)
+    ax.set_ylim(-3, 3)
+    ax.text(2,2,f't = {round(t[i],2)}')
+    ax.set_aspect('equal')
+    ax.plot(rcenter[0,i],rcenter[1,i],'r+',markersize=10)
 
-ani = animation.FuncAnimation(fig, update,frames = np.arange(0, len(t), 100), interval = 33.3)
+ani = animation.FuncAnimation(fig, update,frames = np.arange(0, len(t), 10), interval = 33.3)
 plt.show()
 
-
-#f = r"C:\Users\Stefan\Desktop\animation.gif"
-#ani = animation.FuncAnimation(fig, update,frames = np.arange(0, len(t), 1), interval = 33.3)
+#f = r"C:\Users\Stefan\Desktop\Uni\Master\2.Semester\Computational Physics\Python_scripts\Problem-5\animation.gif"
 #writergif = animation.PillowWriter(fps=1/dt) 
 #ani.save(f, writer=writergif) 
