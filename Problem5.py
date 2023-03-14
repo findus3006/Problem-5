@@ -8,18 +8,18 @@ def leapFrog(r,p,R,dt,coulomb):
         rnorm[i] = np.linalg.norm(r[:,i]-R)**2;
     r = r + p*dt;
     if coulomb == 1:
-        p = p - rnorm*(r-R)*dt +F(r);
+        p = p + (-rnorm*(r-R)+F(r))*dt;
     else:
         p = p - rnorm*(r-R)*dt
     return r,p
 
 def F(r):
     alpha = 1/np.size(r[0,:]);
-    F = np.zeros([np.size(r[0,:])]);
-    for j in F:
-        for i in F:
+    F = np.zeros(r.shape);
+    for j in range(np.size(F[0,:])):
+        for i in range(np.size(F[0,:])):
             if i != j:
-                F[j] += alpha*(r[:,j]-r[:,i])/(np.linalg.norm(r[:,j]-r[:,i])**3)
+                F = alpha*(r[:,j]-r[:,i])/(np.linalg.norm(r[:,j]-r[:,i])**3)
     return F
 
 # General parameters
@@ -38,8 +38,8 @@ for i in range(len(t)-1):
     if t[i] == 25:
         R = np.zeros([3,1]);
         R[0,0] = 1;
-    r[:,:,i+1],p[:,:,i+1] = leapFrog(r[:,:,i],p[:,:,i],R,dt,1);
-    print(round(t[i]))
+    r[:,:,i+1],p[:,:,i+1] = leapFrog(r[:,:,i],p[:,:,i],R,dt,0);
+    print(round(t[i],2))
     rcenter[:,i] = np.transpose(np.sum(r[:,:,i],1)/N);
 
 # fig = plt.figure();
