@@ -2,13 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-def leapFrog(r,p,R,dt):
+def leapFrog(r,p,R,dt,coulomb):
     rnorm = np.zeros([np.size(r[0,:])]);
     for i in range(np.size(r[0,:])):
         rnorm[i] = np.linalg.norm(r[:,i]-R)**2;
     r = r + p*dt;
-    p = p - rnorm*(r-R)*dt;
+    if coulomb == 1:
+        p = p - rnorm*(r-R)*dt +F(r);
+    else:
+        p = p - rnorm*(r-R)*dt
     return r,p
+
+def F(r):
+    alpha = 1/np.size(r[0,:]);
+    F = np.zeros([np.size(r[0,:])]);
+    for j in F:
+        for i in F:
+            if i != j:
+                F[j] += alpha*(r[:,j]-r[:,i])/(np.linalg.norm(r[:,j]-r[:,i])**3)
+    return F
 
 # General parameters
 N = 30;
@@ -26,7 +38,8 @@ for i in range(len(t)-1):
     if t[i] == 25:
         R = np.zeros([3,1]);
         R[0,0] = 1;
-    r[:,:,i+1],p[:,:,i+1] = leapFrog(r[:,:,i],p[:,:,i],R,dt);
+    r[:,:,i+1],p[:,:,i+1] = leapFrog(r[:,:,i],p[:,:,i],R,dt,1);
+    print(round(t[i]))
     rcenter[:,i] = np.transpose(np.sum(r[:,:,i],1)/N);
 
 # fig = plt.figure();
